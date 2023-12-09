@@ -1,7 +1,8 @@
-@{
-    ViewBag.Title = "productviews";
+﻿@{
+    ViewBag.Title = "categoryviews";
     Layout = "~/Views/Shared/_Layout.cshtml";
     <script src="~/Content/assets/js/core/jquery.min.js"></script>
+        <link href="~/Content/assets/css/black-uploader.css" rel="stylesheet" />
 }
 <style>
 .button {
@@ -61,12 +62,11 @@
                 <div class="row">
                     <div class="col-sm-6 text-left">
                         <h5 class="card-category">Dashboard</h5>
-                        <h2 class="card-title">Products</h2>
-                            <div>
+                        <h2 class="card-title">Categories</h2>
+                        <div>
                                 <button class="button" type="button">
-                                    <a class="button__text" href="addproducts">Add Products
+                                    <a class="button__text" href="addcategories">Add Categories
                                     <span class="button__icon"><svg class="svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></span>
-                                    
                                 </button>
                             
                             </div>
@@ -74,8 +74,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row" id="product-filter">
-                   
+
+                <div class="row" id="category-filter">
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
             {
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
-                url: window.location.origin + '/Admin/get_All',
+                url: window.location.origin + '/Admin/get_All_cate',
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -96,44 +96,33 @@
                     var rs = JSON.parse(response);
                     if (rs.ErrCode == 1) {
                         console.log(rs.Data)
-                        const products = rs.Data
-                        let displayProducts = products.map(function (item) {
+                        const category = rs.Data
+                        let displaycategory = category.map(function (item) {
                             return `<div class="mix col-lg-3 col-md-6 best">
-                 <div class="product-item">
-                     <figure>
-                         <img src="${item.URL}" alt="">
-                         <div class="pi-meta">
-                             <div class="pi-m-left">
-                                 <img src="/Content/assets/img/icons/eye.png" alt="">
-                                 <p>quick view</p>
-                             </div>
-                             <div class="pi-m-right">
-                                 <img src="/Content/assets/img/icons/heart.png" alt="">
-                                 <p>save</p>
-                             </div>
-                         </div>
-                     </figure>
-                     <div class="product-info">
-                         <h6>${item.NameProduct}</h6>
-                         <p>${"$" + item.Price}</p>
+                 <div class="category-item">
+
+
+
+                     <div class="category-info">
+                         <h6>${item.NameCategory}</h6>
                          <div>
-                             <a href="#" class="site-btn btn-line">REMOVE</a>
-                             <a href="./editproducts?p-id=${item.ID}" class="site-btn btn-line">EDIT</a>
+                             <a href="./removecategory?c-id=${item.ID}" class="site-btn btn-line">REMOVE</a>
+                             <a href="./editcategories?c-id=${item.ID}" class="site-btn btn-line">EDIT</a>
                          </div>
                      </div>
                  </div>
              </div>`;
                         });
-                        displayProducts = displayProducts.join("");
-                        displayProducts += `<div class="mix col-lg-3 col-md-6 best">
+                        displaycategory = displaycategory.join("");
+                        displaycategory += `<div class="mix col-lg-3 col-md-6 best">
                         <div>
-                            <a class=uct-btn"add-prod" href="addproducts">
+                            <a class="add-category-btn" href="addcategory">
                                 <i class="tim-icons icon-simple-add"></i>
                             </a>
                         </div>
                     </div>`
-                        console.log(displayProducts);
-                        document.getElementById("product-filter").innerHTML = displayProducts;
+                        console.log(displaycategory);
+                        document.getElementById("category-filter").innerHTML = displaycategory;
                     }
                     else {
                         alert(rs.ErrDesc);
@@ -146,3 +135,17 @@
         );
     })
 </script>
+<!-- Cai nay neu can thiet thi cho vao dong 103 -->
+                     <!-- <figure>
+                         <img src="${item.URL}" alt="">
+                         <div class="pi-meta">
+                             <div class="pi-m-left">
+                                 <img src="/Content/assets/img/icons/eye.png" alt="">
+                                 <p>quick view</p>
+                             </div>
+                             <div class="pi-m-right">
+                                 <img src="/Content/assets/img/icons/heart.png" alt="">
+                                 <p>save</p>
+                             </div>
+                         </div>
+                     </figure> -->

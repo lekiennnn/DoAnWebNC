@@ -1,6 +1,6 @@
 
 @{
-    ViewBag.Title = "addcatergories";
+    ViewBag.Title = "editcatergories";
     Layout = "~/Views/Shared/_Layout.cshtml";
     <script src="~/Content/assets/js/core/jquery.min.js"></script>
     <link href="~/Content/assets/css/uploader.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
                 <div class="row">
                     <div class="col-sm-6 text-left">
                         <h5 class="card-category">Dashboard</h5>
-                        <h2 class="card-title">Editing catergory</h2>
+                        <h2 class="card-title">Editing category</h2>
                     </div>
                 </div>
             </div>
@@ -36,19 +36,19 @@
                     </div>
                     <div class="col-6">
                         <div class="text-input">
-                            <label for="p-image" class="text-label">Image's URL:</label>
+                            <label for="c-image" class="text-label">Image's URL:</label>
                             <input type="text" class="text-field" placeholder="https://photos.google.com/photo/...."
-                                   name="p-image" id='p-image' required readonly/>
+                                   name="c-image" id='c-image' required readonly/>
                         </div>
                         <div class="text-input">
-                            <label for="p-name" class="text-label">Catergory's name:</label>
-                            <input type="text" class="text-field" placeholder="Denim pant..." name="p-name" id='p-name'
+                            <label for="c-name" class="text-label">Catergory's name:</label>
+                            <input type="text" class="text-field" placeholder="Denim pant..." name="c-name" id='c-name'
                                    required />
                         </div>
                         <div class="text-input">
-                            <label for="p-desc" class="text-label">Catergory's description:</label>
+                            <label for="c-desc" class="text-label">Catergory's description:</label>
                             <textarea class="text-field" rows="10" placeholder="This catergory will bring about....."
-                                      name="p-desc" id='p-desc' required></textarea>
+                                      name="c-desc" id='c-desc' required></textarea>
                         </div>
                         <input class="submit-btn" type="submit" value="Edit catergory's information">
                     </div>
@@ -86,7 +86,7 @@
         ).then((res) => res.json())
             .then((res) => {
                 console.log(res.data.url);
-                document.getElementById("p-image").value = res.data.url
+                document.getElementById("c-image").value = res.data.url
             })
     }
 </script>
@@ -95,7 +95,7 @@
 
     $(document).ready(function () {
         var url = new URL(window.location.href);
-        var catergoryID = url.searchParams.get("p-id");
+        var catergoryID = url.searchParams.get("c-id");
 
         //trường hợp không rỗng
         var formData = new FormData();
@@ -106,16 +106,16 @@
                 type: "POST",
                 data: formData,
                 contentType: "application/json; charset=utf-8",
-                url: window.location.origin + '/Admin/get_SP_Info',
+                url: window.location.origin + '/Admin/get_All_cate',
                 processData: false,
                 contentType: false,
                 cache: false,
                 success: function (response) {
                     var data = JSON.parse(response);
-                    $("#p-image").val(data.URL);
-                    $("#p-name").val(data.Namecatergory);
-                    $("#p-price").val(data.Price);
-                    $("#p-desc").val(data.Description);
+                    $("#c-image").val(data.URL);
+                    $("#c-name").val(data.Namecatergory);
+                    $("#c-price").val(data.Price);
+                    $("#c-desc").val(data.Description);
                     document.getElementById('start').classList.add("hidden");
                     document.getElementById('notimage').classList.add("hidden");
                     document.getElementById('file-image').classList.remove("hidden");
@@ -134,17 +134,17 @@
     $(".submit-btn").click(function (e) {
         e.preventDefault();
         var url = new URL(window.location.href);
-        var catergoryID = url.searchParams.get("p-id");
+        var catergoryID = url.searchParams.get("c-id");
 
         var form = $('#catergory-form')[0];
         var formData = new FormData(form);
-        formData.append("p-id", catergoryID);
+        formData.append("c-id", catergoryID);
             $.ajax(
                 {
                     type: "POST",
                     data: formData,
                     contentType: "application/json; charset=utf-8",
-                    url: window.location.origin + '/Admin/Edit',
+                    url: window.location.origin + '/Admin/Edit_cate',
                     processData: false,
                     contentType: false,
                     cache: false,
@@ -153,7 +153,7 @@
                         window.location = "catergoryviews";
                     },
                     error: function (response) {
-                        alert("Xử lý cập nhật thông tin sv thất bại");
+                        alert("Xử lý cập nhật thông tin sp thất bại");
                     }
                 }
             );

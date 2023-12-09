@@ -1,17 +1,26 @@
-
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.Linq.Mapping;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
+using System.Web.DynamicData;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using test1.Models;
 
 namespace test1.Controllers
 {
     public class AdminController : Controller
-    {
+    { 
         public DatabaseDataContext db = new DatabaseDataContext();
+
+        public AdminController(DatabaseDataContext db)
+        {
+            this.db = db;
+        }
 
         // GET: Admin
         public ActionResult Index()
@@ -30,6 +39,8 @@ namespace test1.Controllers
         {
             return View();
         }
+
+        //Products
         public ActionResult addproducts()
         {
             return View();
@@ -38,18 +49,235 @@ namespace test1.Controllers
         {
             return View();
         }
-
-        public string Add()
+        
+        //Categories
+        public ActionResult addcategories()
         {
-            //ví dụ về linq to sql
-            //var qr = db.tbl_SVs; //select * from tbl_SV
-            //var qr1 = db.tbl_SVs.Where(o => o.MSSV == "1234"); //select * from tbl_SV where mssv == "1234"
+            return View();
+        }
+        public ActionResult categoryviews()
+        {
+            return View();
+        }
+        public ActionResult removecategory()
+        {
+            RemoveCategory();
+            return View();
+        }
+        public ActionResult editcategories()
+        {
+            return View();
+        }
+        //Accounts
+        public ActionResult accountviews() 
+        { 
+            return View();
+        }
+        public ActionResult editaccounts()
+        {
+            return View();
+        }
+        public ActionResult removeaccounts()
+        {
+            return View();
+        }
 
+        //ACCOUNTS
+        public string get_All_acc()
+        {
+            APIResult_ett<List<Account>> rs = new APIResult_ett<List<Account>>();
+            try
+            {
+                var qr = db.Accounts;
+                if (qr.Any())
+                {
+                    rs.ErrCode = EnumErrCode.Success;
+                    rs.ErrDesc = "Lấy danh sách tài khoản thành công";
+                    rs.Data = qr.ToList();
+                }
+                else
+                {
+                    rs.ErrCode = EnumErrCode.Empty;
+                    rs.ErrDesc = "Danh sách tài khoản rỗng";
+                    rs.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                rs.ErrCode = EnumErrCode.Error;
+                rs.ErrDesc = "Có lỗi xảy ra trong quá trình lấy danh sách tài khoản. Chi tiết lỗi: " + ex.Message;
+                rs.Data = null;
+            }
+            return JsonConvert.SerializeObject(rs);
+        }
+        //Sua quyen tai khoan
+        public string Edit_acc()
+        {
+            string admin = Request["a-isAdmin"];
+            {
+                try
+                {
+                    var qrs = db.Accounts;
+                    if (qrs.Any())
+                    {
+                        Account acc = qrs.SingleOrDefault();
+                        acc.IsAdmin = true;
+                        db.SubmitChanges();
+                        return "Cập nhật thông tin tài khoản thành công";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return "Cập nhật thông tin tài khoản thất bại. Chi tiết lỗi: " + ex.Message;
+                }
+                return "Lỗi";
+            }
+        }
+        public string Remove_acc()
+        {
+            return "Lỗi";
+        }
+    //CATEGORY
+    public string Add_cate()
+        {
+            string URL = Request["c-image"];
+            string catename = Request["c-name"];
+            DateTime NOW = DateTime.Now;
+            Boolean IsExist = IsCategoryNameExists(catename);
+            if (!string.IsNullOrEmpty(catename))
+            {
+                if (IsExist)
+                {
+                    return "Danh mục đã tồn tại";
+                }
+                else
+                {
+                    try
+                    {
+                        Category cate = new Category();
+                        cate.URL = URL;
+                        cate.NameCategory = catename;
+                        cate.ShowOnHomePage = true;
+                        cate.CreatedOnUtc = NOW;
+                        cate.UpdatedOnUtc = NOW;
+
+
+                        db.Categories.InsertOnSubmit(cate);
+                        db.SubmitChanges();
+
+                        return "Thêm mới danh mục thành công";
+                    }
+                    catch (Exception ex)
+                    {
+                        return "Thêm mới danh mục thất bại. Chi tiết lỗi: " + ex.Message;
+                    }
+
+
+                }
+            }
+            else
+            {
+                return "Mày chơi tao không được đâu";
+            }
+        }
+        public string Edit_cate()
+        {
+            string URL = Request["c-image"];
+            string catename = Request["c-name"];
+            DateTime NOW = DateTime.Now;
+            Boolean IsExist = IsCategoryNameExists(catename);
+            int CategoryIntID = int.Parse(catename);
+            if (!string.IsNullOrEmpty(catename))
+            {
+                if (IsExist)
+                {
+                    return "Danh mục đã tồn tại";
+                }
+                else
+                {
+                    try
+                    {
+                        var qrs = db.Categories.Where(o => o.ID == CategoryIntID);
+                        if (qrs.Any())
+                        {
+                            Category cate = qrs.SingleOrDefault();
+                            cate.URL = URL;
+                            cate.NameCategory = catename;
+                            cate.ShowOnHomePage = true;
+                            cate.CreatedOnUtc = NOW;
+                            cate.UpdatedOnUtc = NOW;
+
+                            db.SubmitChanges();
+                            return "Cập nhật thông tin danh mục thành công";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return "Cập nhật thông tin danh mục thất bại. Chi tiết lỗi: " + ex.Message;
+                    }
+                }
+            }
+            else
+            {
+                return "Mày chơi tao không được đâu";
+            }
+            return "Lỗi";
+        }
+        public void RemoveCategory()
+        {
+            string id = Request["c-id"];
+            int categoryIntID = int.Parse(id);
+            var qrs = db.Categories.Where(o => o.ID == categoryIntID);
+            if (qrs.Any())
+            {
+                //xóa (ShowOnHomePage = 0)
+                Category sp = qrs.SingleOrDefault();
+                sp.ShowOnHomePage = false;
+                db.SubmitChanges();
+            }
+        }
+        //CHECK IF CATEGORY NAME ALREADY EXISTS
+        public bool IsCategoryNameExists(string categoryNameToCompare)
+        {
+            bool categoryNames = db.Categories.Any(o => o.NameCategory == categoryNameToCompare);
+            return categoryNames;
+        }
+        //VIEW ALL CATEGORIES
+        public string get_All_cate()
+        {
+            APIResult_ett<List<Category>> rs = new APIResult_ett<List<Category>>();
+            try
+            {
+                var qr = db.Categories.Where(o => o.ShowOnHomePage == true);
+                if (qr.Any())
+                {
+                    rs.ErrCode = EnumErrCode.Success;
+                    rs.ErrDesc = "Lấy danh mục thành công";
+                    rs.Data = qr.ToList();
+                }
+                else
+                {
+                    rs.ErrCode = EnumErrCode.Empty;
+                    rs.ErrDesc = "Danh mục rỗng";
+                    rs.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                rs.ErrCode = EnumErrCode.Error;
+                rs.ErrDesc = "Có lỗi xảy ra trong quá trình lấy danh mục. Chi tiết lỗi: " + ex.Message;
+                rs.Data = null;
+            }
+
+            return JsonConvert.SerializeObject(rs);
+        }
+        //PRODUCTS
+        public string Add_prd()
+        {
             string URL = Request["p-image"];
             string prdname = Request["p-name"];
             string price = Request["p-price"];
             string desc = Request["p-desc"];
-
 
             if (!string.IsNullOrEmpty(URL) && !string.IsNullOrEmpty(prdname) && !string.IsNullOrEmpty(price) && !string.IsNullOrEmpty(desc))
             {
@@ -61,7 +289,7 @@ namespace test1.Controllers
                     prd.NameProduct = prdname;
                     prd.Price = double.Parse(price);
                     prd.Description = desc;
-
+                    
                     db.Products.InsertOnSubmit(prd);
                     db.SubmitChanges();
 
@@ -71,27 +299,20 @@ namespace test1.Controllers
                 {
                     return "Thêm mới sản phẩm thất bại. Chi tiết lỗi: " + ex.Message;
                 }
-
-
             }
             else
             {
                 return "Mày chơi tao không được đâu";
             }
-
-
         }
-
-        public string Edit()
+        public string Edit_prd()
         {
-
             string id = Request["p-id"];
             string URL = Request["p-image"];
             string prdname = Request["p-name"];
             string price = Request["p-price"];
             string desc = Request["p-desc"];
             int productIntID = int.Parse(id);
-
 
             if (!string.IsNullOrEmpty(URL) && !string.IsNullOrEmpty(prdname) && !string.IsNullOrEmpty(price) && !string.IsNullOrEmpty(desc))
             {
@@ -109,7 +330,7 @@ namespace test1.Controllers
 
                         db.SubmitChanges();
 
-                        return "Cập nhật thông tin sinh viên thành công";
+                        return "Cập nhật thông tin sản phẩm thành công";
                     }
                     else
                     {
@@ -126,9 +347,8 @@ namespace test1.Controllers
             {
                 return "Mày chơi tao không được đâu";
             }
-
-
         }
+
 
         public string get_All()
         {
@@ -161,7 +381,6 @@ namespace test1.Controllers
 
             return JsonConvert.SerializeObject(rs);
         }
-
         public string get_SP_Info()
         {
             string productID = Request["productID"];
@@ -183,7 +402,7 @@ namespace test1.Controllers
             }
             catch (Exception ex)
             {
-                return "Lấy thông tin sinh viên thất bại. Chi tiết lỗi: " + ex.Message;
+                return "Lấy thông tin sản phẩm thất bại. Chi tiết lỗi: " + ex.Message;
             }
         }
     }
