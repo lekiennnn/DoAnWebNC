@@ -155,7 +155,8 @@ namespace test1.Controllers
         //Sua quyen tai khoan
         public string Edit_acc()
         {
-            string admin = Request["a-isAdmin"];
+            Boolean Roles = Convert.ToBoolean(Request["a-roles"]);
+            string Username = Request["a-name"];
             {
                 try
                 {
@@ -163,7 +164,8 @@ namespace test1.Controllers
                     if (qrs.Any())
                     {
                         Account acc = qrs.SingleOrDefault();
-                        acc.IsAdmin = true;
+                        acc.IsAdmin = Roles;
+                        acc.UserName = Username;
                         db.SubmitChanges();
                         return "Cập nhật thông tin tài khoản thành công";
                     }

@@ -25,6 +25,15 @@
                             <input type="text" class="text-field" placeholder="Denim pant..." name="a-name" id='a-name'
                                    required />
                         </div>
+                        <div class="checkroles">          
+                            <!-- <input type="checkbox" class="account-roles" name="a-roles" id ="a-roles">
+                            <label for="a-roles" class="text-label">Is this account for admins?</label>      -->
+                            <form>
+                                <label for="a-roles" class="text-label">Is this account for admins?</label>                            
+                                <input type="checkbox" id="a-roles" name="a-roles" value="true">
+                            </form>
+
+                        </div>                         
                         
                         <input class="submit-btn" type="submit" value="Edit account's information">
                     </div>
@@ -99,7 +108,7 @@
                     
                 },
                 error: function (response) {
-                    alert("Xử lý lấy thông tin sinh viên cần sửa thất bại");
+                    alert("Xử lý lấy thông tin tài khoản cần sửa thất bại");
                 }
             }
         );
