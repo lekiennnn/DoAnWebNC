@@ -3,19 +3,76 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     <script src="~/Content/assets/js/core/jquery.min.js"></script>
 }
+<style>
+.button {
+  --main-focus: #2d8cf0;
+  --font-color: #323232;
+  --bg-color-sub: #dedede;
+  --bg-color: #eee;
+  --main-color: #323232;
+  position: relative;
+  width: 150px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+  background-color: var(--bg-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.button, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button .button__text {
+  transform: translateX(22px);
+  color: var(--font-color);
+  font-weight: 600;
+}
+
+.button .button__icon {
+  position: absolute;
+  transform: translateX(109px);
+  height: 100%;
+  width: 39px;
+  background-color: var(--bg-color-sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button .svg {
+  width: 20px;
+  fill: var(--main-color);
+}
+
+.button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px var(--main-color);
+}
+</style>
 <div class="row">
     <div class="col-12">
         <div class="card card-chart">
             <div class="card-header ">
                 <div class="row">
                     <div class="col-sm-6 text-left">
-                        <h5 class="card-category">Dashboard</h5>
+                        <h5 class="card-account">Dashboard</h5>
                         <h2 class="card-title">Accounts</h2>
+                        <div>
+                                <button class="button" type="button">
+                                    <a class="button__text" href="addaccounts">Add accounts
+                                    <span class="button__icon"><svg class="svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></span>
+                                </button>                       
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row" id="product-filter">
+                <div class="row" id="account-filter">
                    
                 </div>
             </div>
@@ -37,10 +94,10 @@
                     var rs = JSON.parse(response);
                     if (rs.ErrCode == 1) {
                         console.log(rs.Data)
-                        const products = rs.Data
-                        let displayProducts = products.map(function (item) {
+                        const accounts = rs.Data
+                        let displayaccounts = accounts.map(function (item) {
                             return `<div class="mix col-lg-3 col-md-6 best">
-                 <div class="product-item">
+                 <div class="account-item">
                      <figure>
                          <img src="${item.URL}" alt="">
                          <div class="pi-meta">
@@ -54,34 +111,34 @@
                              </div>
                          </div>
                      </figure>
-                     <div class="product-info">
-                         <h6>${item.NameProduct}</h6>
+                     <div class="account-info">
+                         <h6>${item.Nameaccount}</h6>
                          <p>${"$" + item.Price}</p>
                          <div>
                              <a href="#" class="site-btn btn-line">REMOVE</a>
-                             <a href="./editproducts?p-id=${item.ID}" class="site-btn btn-line">EDIT</a>
+                             <a href="./editaccounts?p-id=${item.ID}" class="site-btn btn-line">EDIT</a>
                          </div>
                      </div>
                  </div>
              </div>`;
                         });
-                        displayProducts = displayProducts.join("");
-                        displayProducts += `<div class="mix col-lg-3 col-md-6 best">
+                        displayaccounts = displayaccounts.join("");
+                        displayaccounts += `<div class="mix col-lg-3 col-md-6 best">
                         <div>
-                            <a class=uct-btn"add-prod" href="addproducts">
+                            <a class=uct-btn"add-acc" href="addaccounts">
                                 <i class="tim-icons icon-simple-add"></i>
                             </a>
                         </div>
                     </div>`
-                        console.log(displayProducts);
-                        document.getElementById("product-filter").innerHTML = displayProducts;
+                        console.log(displayaccounts);
+                        document.getElementById("account-filter").innerHTML = displayaccounts;
                     }
                     else {
                         alert(rs.ErrDesc);
-                    }
+                    } 
                 },
                 error: function (response) {
-                    alert("Lấy DSSP thất bại");
+                    alert("Lấy danh sách tài khoản thất bại");
                 }
             }
         );

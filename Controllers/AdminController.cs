@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.DynamicData;
 using System.Web.Mvc;
 using System.Web.Services.Description;
+using System.Web.UI.WebControls;
 using test1.Models;
 
 namespace test1.Controllers
@@ -16,11 +17,6 @@ namespace test1.Controllers
     public class AdminController : Controller
     { 
         public DatabaseDataContext db = new DatabaseDataContext();
-
-        public AdminController(DatabaseDataContext db)
-        {
-            this.db = db;
-        }
 
         // GET: Admin
         public ActionResult Index()
@@ -81,8 +77,53 @@ namespace test1.Controllers
         {
             return View();
         }
+        public ActionResult addaccounts()
+        {
+            return View();
+        }
 
         //ACCOUNTS
+        public bool IsAccountNameExists(string accountNameToCompare)
+        {
+            bool usernames = db.Accounts.Any(o => o.UserName == accountNameToCompare);
+            return usernames;
+        }
+
+        public string Add_acc()
+        {
+            string Username = Request["a-name"];
+            Boolean Roles = Convert.ToBoolean(Request["a-roles"]);
+            Boolean IsExist = IsAccountNameExists(Username);
+            if (!string.IsNullOrEmpty(Username))
+            {
+                if (IsExist)
+                {
+                    return "Tài khoản đã tồn tại";
+                }
+                else
+                {
+                    try
+                    {
+                        Account acc = new Account();
+                        acc.UserName = Username;
+                        acc.IsAdmin = Roles;
+
+                        db.Accounts.InsertOnSubmit(acc);
+                        db.SubmitChanges();
+
+                        return "Thêm mới tài khoản thành công";
+                    }
+                    catch (Exception ex)
+                    {
+                        return "Thêm mới tài khoản thất bại. Chi tiết lỗi: " + ex.Message;
+                    }
+                }
+            }
+            else
+            {
+                return "Vui lòng điền đầy đủ thông tin";
+            }
+        }
         public string get_All_acc()
         {
             APIResult_ett<List<Account>> rs = new APIResult_ett<List<Account>>();
@@ -161,7 +202,6 @@ namespace test1.Controllers
                         cate.CreatedOnUtc = NOW;
                         cate.UpdatedOnUtc = NOW;
 
-
                         db.Categories.InsertOnSubmit(cate);
                         db.SubmitChanges();
 
@@ -171,8 +211,6 @@ namespace test1.Controllers
                     {
                         return "Thêm mới danh mục thất bại. Chi tiết lỗi: " + ex.Message;
                     }
-
-
                 }
             }
             else
