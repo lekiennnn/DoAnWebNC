@@ -1,6 +1,6 @@
 
 @{
-    ViewBag.Title = "editcatergories";
+    ViewBag.Title = "editaccounts";
     Layout = "~/Views/Shared/_Layout.cshtml";
     <script src="~/Content/assets/js/core/jquery.min.js"></script>
     <link href="~/Content/assets/css/uploader.css" rel="stylesheet" />
@@ -12,21 +12,21 @@
             <div class="card-header ">
                 <div class="row">
                     <div class="col-sm-6 text-left">
-                        <h5 class="card-category">Dashboard</h5>
-                        <h2 class="card-title">Editing category</h2>
+                        <h5 class="card-account">Dashboard</h5>
+                        <h2 class="card-title">Editing accounts</h2>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <form id="catergory-form" class="row">
+                <form id="account-form" class="row">
                     <div class="col-6">
                         <div class="text-input">
-                            <label for="c-name" class="text-label">Catergory's name:</label>
-                            <input type="text" class="text-field" placeholder="Denim pant..." name="c-name" id='c-name'
+                            <label for="a-name" class="text-label">Account's name:</label>
+                            <input type="text" class="text-field" placeholder="Denim pant..." name="a-name" id='a-name'
                                    required />
                         </div>
                         
-                        <input class="submit-btn" type="submit" value="Edit catergory's information">
+                        <input class="submit-btn" type="submit" value="Edit account's information">
                     </div>
 
                 </form>
@@ -46,7 +46,7 @@
 
 
     const handleSubmit = () => {
-        const form = new FormData(document.getElementById("catergory-form"));
+        const form = new FormData(document.getElementById("account-form"));
         const image = form.get("fileUpload");
         console.log(image);
 
@@ -62,7 +62,7 @@
         ).then((res) => res.json())
             .then((res) => {
                 console.log(res.data.url);
-                document.getElementById("c-image").value = res.data.url
+                document.getElementById("a-image").value = res.data.url
             })
     }
 </script>
@@ -71,11 +71,11 @@
 
     $(document).ready(function () {
         var url = new URL(window.location.href);
-        var catergoryID = url.searchParams.get("c-id");
+        var accountID = url.searchParams.get("a-id");
 
         //trường hợp không rỗng
         var formData = new FormData();
-        formData.append("catergoryID", catergoryID);
+        formData.append("accountID", accountID);
 
         $.ajax(
             {
@@ -88,10 +88,10 @@
                 cache: false,
                 success: function (response) {
                     var data = JSON.parse(response);
-                    $("#c-image").val(data.URL);
-                    $("#c-name").val(data.Namecatergory);
-                    $("#c-price").val(data.Price);
-                    $("#c-desc").val(data.Description);
+                    $("#a-image").val(data.URL);
+                    $("#a-name").val(data.Nameaccount);
+                    $("#a-price").val(data.Price);
+                    $("#a-desc").val(data.Description);
                     document.getElementById('start').classList.add("hidden");
                     document.getElementById('notimage').classList.add("hidden");
                     document.getElementById('file-image').classList.remove("hidden");
@@ -110,26 +110,26 @@
     $(".submit-btn").click(function (e) {
         e.preventDefault();
         var url = new URL(window.location.href);
-        var catergoryID = url.searchParams.get("c-id");
+        var accountID = url.searchParams.get("a-id");
 
-        var form = $('#catergory-form')[0];
+        var form = $('#account-form')[0];
         var formData = new FormData(form);
-        formData.append("c-id", catergoryID);
+        formData.append("a-id", accountID);
             $.ajax(
                 {
                     type: "POST",
                     data: formData,
                     contentType: "application/json; charset=utf-8",
-                    url: window.location.origin + '/Admin/Edit_cate',
+                    url: window.location.origin + '/Admin/Edit_acc',
                     processData: false,
                     contentType: false,
                     cache: false,
                     success: function (response) {
                         alert(response);
-                        window.location = "categoryviews";
+                        window.location = "accountviews";
                     },
                     error: function (response) {
-                        alert("Xử lý cập nhật thông tin sp thất bại");
+                        alert("Xử lý cập nhật thông tin tài khoản thất bại");
                     }
                 }
             );

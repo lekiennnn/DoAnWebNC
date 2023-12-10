@@ -91,6 +91,7 @@ namespace test1.Controllers
 
         public string Add_acc()
         {
+            string ID = Request["a-id"];
             string Username = Request["a-name"];
             Boolean Roles = Convert.ToBoolean(Request["a-roles"]);
             Boolean IsExist = IsAccountNameExists(Username);
@@ -181,7 +182,7 @@ namespace test1.Controllers
     //CATEGORY
     public string Add_cate()
         {
-            string URL = Request["c-image"];
+            string id = Request["c-id"];
             string catename = Request["c-name"];
             DateTime NOW = DateTime.Now;
             Boolean IsExist = IsCategoryNameExists(catename);
@@ -196,7 +197,6 @@ namespace test1.Controllers
                     try
                     {
                         Category cate = new Category();
-                        cate.URL = URL;
                         cate.NameCategory = catename;
                         cate.ShowOnHomePage = true;
                         cate.CreatedOnUtc = NOW;
@@ -220,11 +220,11 @@ namespace test1.Controllers
         }
         public string Edit_cate()
         {
-            string URL = Request["c-image"];
+            string id = Request["c-id"];
             string catename = Request["c-name"];
             DateTime NOW = DateTime.Now;
             Boolean IsExist = IsCategoryNameExists(catename);
-            int CategoryIntID = int.Parse(catename);
+            int CategoryIntID = int.Parse(id);
             if (!string.IsNullOrEmpty(catename))
             {
                 if (IsExist)
@@ -239,7 +239,6 @@ namespace test1.Controllers
                         if (qrs.Any())
                         {
                             Category cate = qrs.SingleOrDefault();
-                            cate.URL = URL;
                             cate.NameCategory = catename;
                             cate.ShowOnHomePage = true;
                             cate.CreatedOnUtc = NOW;
@@ -386,7 +385,6 @@ namespace test1.Controllers
                 return "Mày chơi tao không được đâu";
             }
         }
-
 
         public string get_All()
         {

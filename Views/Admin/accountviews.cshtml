@@ -2,6 +2,7 @@
     ViewBag.Title = "accountviews";
     Layout = "~/Views/Shared/_Layout.cshtml";
     <script src="~/Content/assets/js/core/jquery.min.js"></script>
+        <link href="~/Content/assets/css/black-uploader.css" rel="stylesheet" />
 }
 <style>
 .button {
@@ -66,14 +67,15 @@
                                 <button class="button" type="button">
                                     <a class="button__text" href="addaccounts">Add accounts
                                     <span class="button__icon"><svg class="svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></span>
-                                </button>                       
-                        </div>
+                                </button>
+                            
+                            </div>
                     </div>
                 </div>
             </div>
             <div class="card-body">
+
                 <div class="row" id="account-filter">
-                   
                 </div>
             </div>
         </div>
@@ -94,11 +96,47 @@
                     var rs = JSON.parse(response);
                     if (rs.ErrCode == 1) {
                         console.log(rs.Data)
-                        const accounts = rs.Data
-                        let displayaccounts = accounts.map(function (item) {
+                        const account = rs.Data
+                        let displayaccount = account.map(function (item) {
                             return `<div class="mix col-lg-3 col-md-6 best">
                  <div class="account-item">
-                     <figure>
+
+
+
+                     <div class="account-info">
+                         <h6>${item.UserName}</h6>
+                         <div>
+                             <a href="./removeaccounts?a-id=${item.ID}" class="site-btn btn-line">REMOVE</a>
+                             <a href="./editaccounts?a-id=${item.ID}" class="site-btn btn-line">EDIT</a>
+                         </div>
+                     </div>
+                 </div>
+             </div>`;
+                        });
+                        displayaccount = displayaccount.join("");
+                        displayaccount += `<div class="mix col-lg-3 col-md-6 best">
+                        <div>
+                            <a class="add-account-btn" href="addaccounts">
+                                <i class="tim-icons icon-simple-add"></i>
+                            </a>
+                        </div>
+                    </div>`
+                        console.log(displayaccount);
+                        document.getElementById("account-filter").innerHTML = displayaccount;
+                    }
+                    else {
+                        alert(rs.ErrDesc);
+                    }
+                },
+                error: function (response) {
+                    alert("Lấy DSSP thất bại");
+                }
+            }
+        );
+    })
+</script>
+<!-- Cai nay neu can thiet thi cho vao dong 103 -->
+                     <!-- <figure>
                          <img src="${item.URL}" alt="">
                          <div class="pi-meta">
                              <div class="pi-m-left">
@@ -110,37 +148,4 @@
                                  <p>save</p>
                              </div>
                          </div>
-                     </figure>
-                     <div class="account-info">
-                         <h6>${item.Nameaccount}</h6>
-                         <p>${"$" + item.Price}</p>
-                         <div>
-                             <a href="#" class="site-btn btn-line">REMOVE</a>
-                             <a href="./editaccounts?p-id=${item.ID}" class="site-btn btn-line">EDIT</a>
-                         </div>
-                     </div>
-                 </div>
-             </div>`;
-                        });
-                        displayaccounts = displayaccounts.join("");
-                        displayaccounts += `<div class="mix col-lg-3 col-md-6 best">
-                        <div>
-                            <a class=uct-btn"add-acc" href="addaccounts">
-                                <i class="tim-icons icon-simple-add"></i>
-                            </a>
-                        </div>
-                    </div>`
-                        console.log(displayaccounts);
-                        document.getElementById("account-filter").innerHTML = displayaccounts;
-                    }
-                    else {
-                        alert(rs.ErrDesc);
-                    } 
-                },
-                error: function (response) {
-                    alert("Lấy danh sách tài khoản thất bại");
-                }
-            }
-        );
-    })
-</script>
+                     </figure> -->
