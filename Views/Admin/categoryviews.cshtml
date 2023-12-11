@@ -69,9 +69,23 @@
                                     <span class="button__icon"><svg class="svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></span>
                                 </button>
                             
-                            </div>
+                        </div>
+                        
                     </div>
                 </div>
+                        <div class="card-body">
+                                <table class="table table-bordered table-border-grey">
+                                    <thead>
+                                        <tr class="bg-primary ">
+                                            <th style="width: 10px "> ID</th>
+                                            <th style="width: 200px ">Category's name</th>
+                                            <th style="width: 50px">Options</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl_data">
+                                    </tbody>
+                                </table>
+                            </div>                
             </div>
             <div class="card-body">
 
@@ -81,8 +95,7 @@
         </div>
     </div>
 </div>
-
-<script>
+<!-- <script>
     $(document).ready(function () {
         $.ajax(
             {
@@ -106,7 +119,7 @@
                      <div class="category-info">
                          <h6>${item.NameCategory}</h6>
                          <div>
-                             <a href="./removecategory?c-id=${item.ID}" class="site-btn btn-line">REMOVE</a>
+                             <a href="./RemoveCategory?c-id=${item.ID}" class="site-btn btn-line">REMOVE</a>
                              <a href="./editcategories?c-id=${item.ID}" class="site-btn btn-line">EDIT</a>
                          </div>
                      </div>
@@ -134,7 +147,134 @@
             }
         );
     })
+</script> -->
+
+<script>
+    function Delete_obj(id) {
+        if (confirm("Bạn có thực sự muốn xóa bản ghi có id=" + id + " này không?")) {
+            //xử lý xóa
+            /*alert("Đồng ý xóa");*/
+
+            //trường hợp không rỗng
+            var formData = new FormData();
+            formData.append("mssv", id);
+
+            $.ajax(
+                {
+                    type: "POST",
+                    data: formData,
+                    contentType: "application/json; charset=utf-8",
+                    url: window.location.origin + '/Admin/RemoveCategory',
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (response) {
+                        var rs = JSON.parse(response);
+                        alert(rs.ErrDesc);
+                        //refresh lại trang web để thấy thay đổi;
+                        window.location.href = "/Admin/categoryviews";
+                    },
+                    error: function (response) {
+                        alert("Xóa sinh viên thất bại");
+                    }
+                }
+            );
+        }
+    };
+
+    $(document).ready(function () {
+        $.ajax(
+            {
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                //url: window.location.origin + '/QLSV/get_All',
+                url: window.location.origin + '/Admin/get_All_cate',
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response) {
+                    var rs = JSON.parse(response);
+
+
+                    // if (rs.ErrCode == 1) {
+                    //     console.log(rs.Data)
+                    //     const category = rs.Data
+                    //     let displaycategory = category.map(function (item) {
+                    //         return `"<tr> 
+                    //         <td> ${item.ID} </td>
+                    //         <td> ${item.NameCategory}</td> 
+                    //         <td><a href="./editcategories?c-id=${item.ID}" class=' btn  btn-outline-warning border-0'> <i class='fa fa-pen' > </i> </a> 
+                    //             <button type='button' onclick='Delete_obj(" + rs.Data[i].MSSV + ")' class='btn btn-outline-danger border-0'> <i class='fa fa-trash' > </i> </button> </td> </tr>";`
+                    //     console.log(displaycategory);
+                    //     document.getElementById("category-filter").innerHTML = displaycategory;
+                    // }
+                    if (rs.ErrCode == 1) {
+                        //trường hợp lấy dssv thành công
+                        //console.log(rs.Data);
+                        var str = "";
+                        for (var i = 0; i < rs.Data.length; i++) {
+                            str += "<tr> <td> " + rs.Data[i].ID + " </td><td> " + rs.Data[i].NameCategory + "</td> <td><a href='./editcategories?c-id=" + rs.Data[i].ID + "' class=' btn  btn-outline-warning border-0'> <i class='fa fa-pen' > </i> </a> <button type='button' onclick='Delete_obj(" + rs.Data[i].ID + ")' class='btn btn-outline-danger border-0'> <i class='fa fa-trash' > </i> </button> </td> </tr>";
+                        }
+                        $("#tbl_data").html(str);
+                    }
+                    else {
+                        alert(rs.ErrDesc);
+                    }
+                },
+                error: function (response) {
+                    alert("Lấy DSSV thất bại");
+                }
+            }
+        );
+
+        $("#btn_search_action").click(function () {
+            //alert($("#txt_search_val").val());
+            var search_type = $("#slc_search_type").val();
+            //if (!search_type) {
+            //    alert("Vui lòng chọn tiêu chí tìm kiếm");
+            //    return false;
+            //}
+
+            var formData = new FormData();
+            formData.append("search_val", $("#txt_search_val").val());
+            formData.append("search_type", search_type);
+
+            $.ajax(
+                {
+                    type: "POST",
+                    data: formData,
+                    contentType: "application/json; charset=utf-8",
+                    url: window.location.origin + '/QLSV/Search_SV',
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (response) {
+                        var rs = JSON.parse(response);
+
+                        if (rs.ErrCode == 1) {
+                            //trường hợp lấy dssv thành công
+                            //console.log(rs.Data);
+                            var str = "";
+                            for (var i = 0; i < rs.Data.length; i++) {
+                                str += "<tr> <td> " + (i + 1) + "</td> <td> " + rs.Data[i].MSSV + " </td><td> " + rs.Data[i].HoTen + "</td> <td><a href='./SuaSV?mssv=" + rs.Data[i].MSSV + "' class=' btn  btn-outline-warning border-0'> <i class='fa fa-pen' > </i> </a> <button type='button' onclick='Delete_obj(" + rs.Data[i].MSSV + ")' class='btn btn-outline-danger border-0'> <i class='fa fa-trash' > </i> </button> </td> </tr>";
+                            }
+                            $("#tbl_data").html(str);
+                        }
+                        else {
+                            alert(rs.ErrDesc);
+                        }
+                    },
+                    error: function (response) {
+                        alert("Xóa sinh viên thất bại");
+                    }
+                }
+            );
+        })
+    })
+
 </script>
+
+
 <!-- Cai nay neu can thiet thi cho vao dong 103 -->
                      <!-- <figure>
                          <img src="${item.URL}" alt="">

@@ -57,7 +57,6 @@ namespace test1.Controllers
         }
         public ActionResult removecategory()
         {
-            RemoveCategory();
             return View();
         }
         public ActionResult editcategories()
@@ -163,7 +162,7 @@ namespace test1.Controllers
                     var qrs = db.Accounts;
                     if (qrs.Any())
                     {
-                        Account acc = qrs.SingleOrDefault();
+                        Account acc = qrs.FirstOrDefault();
                         acc.IsAdmin = Roles;
                         acc.UserName = Username;
                         db.SubmitChanges();
@@ -181,8 +180,39 @@ namespace test1.Controllers
         {
             return "Lỗi";
         }
-    //CATEGORY
-    public string Add_cate()
+        //CATEGORY
+        public string get_Category()
+        {
+            APIResult_ett<List<Category>> rs = new APIResult_ett<List<Category>>();
+            try
+            {
+                //truy vấn db để lấy toàn bộ dữ liệu về ds sản phẩm
+                var qr = db.Categories;
+                if (qr.Any())
+                {
+                    //có dữ liệu => chính là dssv
+                    rs.ErrCode = EnumErrCode.Success;
+                    rs.ErrDesc = "Lấy DS Category thành công";
+                    rs.Data = qr.ToList();
+                }
+                else
+                {
+                    //không có dữ liệu thỏa mãn
+                    rs.ErrCode = EnumErrCode.Empty;
+                    rs.ErrDesc = "DS Category rỗng";
+                    rs.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                rs.ErrCode = EnumErrCode.Error;
+                rs.ErrDesc = "Có lỗi xảy ra trong quá trình lấy về DS Category. Chi tiết lỗi: " + ex.Message;
+                rs.Data = null;
+            }
+
+            return JsonConvert.SerializeObject(rs);
+        }
+        public string Add_cate()
         {
             string id = Request["c-id"];
             string catename = Request["c-name"];
@@ -226,7 +256,7 @@ namespace test1.Controllers
             string catename = Request["c-name"];
             DateTime NOW = DateTime.Now;
             Boolean IsExist = IsCategoryNameExists(catename);
-            int CategoryIntID = int.Parse(id);
+            //int CategoryIntID = int.Parse(id);
             if (!string.IsNullOrEmpty(catename))
             {
                 if (IsExist)
@@ -237,7 +267,7 @@ namespace test1.Controllers
                 {
                     try
                     {
-                        var qrs = db.Categories.Where(o => o.ID == CategoryIntID);
+                        var qrs = db.Categories.Where(o => o.ID == int.Parse(id));
                         if (qrs.Any())
                         {
                             Category cate = qrs.SingleOrDefault();
@@ -262,19 +292,42 @@ namespace test1.Controllers
             }
             return "Lỗi";
         }
-        public void RemoveCategory()
+
+        public string RemoveCategory()
         {
             string id = Request["c-id"];
-            int categoryIntID = int.Parse(id);
-            var qrs = db.Categories.Where(o => o.ID == categoryIntID);
-            if (qrs.Any())
-            {
-                //xóa (ShowOnHomePage = 0)
-                Category sp = qrs.SingleOrDefault();
-                sp.ShowOnHomePage = false;
-                db.SubmitChanges();
-            }
+            //int CategoryIntID = int.Parse(id);
+                    try
+                    {
+                        var qrs = db.Categories.Where(o => o.ID == int.Parse(id));
+                        if (qrs.Any())
+                        {
+                            Category cate = qrs.FirstOrDefault();
+                            cate.ShowOnHomePage = false;
+                            db.SubmitChanges();
+                            return "Cập nhật thông tin danh mục thành công";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return "Cập nhật thông tin danh mục thất bại. Chi tiết lỗi: " + ex.Message;
+                    }
+            return "Lỗi";
         }
+        //public void RemoveCategory()
+        //{
+        //    string id = Request["c-id"];
+        //    int categoryIntID = int.Parse(id);
+        //    var qrs = db.Categories.Where(o => o.ID == categoryIntID);
+        //    if (qrs.Any())
+        //    {
+        //        //xóa (ShowOnHomePage = 0)
+        //        Category sp = qrs.SingleOrDefault();
+        //        sp.ShowOnHomePage = false;
+        //        db.SubmitChanges();
+        //    }
+        //}
+
         //CHECK IF CATEGORY NAME ALREADY EXISTS
         public bool IsCategoryNameExists(string categoryNameToCompare)
         {
@@ -317,6 +370,7 @@ namespace test1.Controllers
             string prdname = Request["p-name"];
             string price = Request["p-price"];
             string desc = Request["p-desc"];
+            string category = Request["p-category"];
 
             if (!string.IsNullOrEmpty(URL) && !string.IsNullOrEmpty(prdname) && !string.IsNullOrEmpty(price) && !string.IsNullOrEmpty(desc))
             {
@@ -328,7 +382,8 @@ namespace test1.Controllers
                     prd.NameProduct = prdname;
                     prd.Price = double.Parse(price);
                     prd.Description = desc;
-                    
+                    prd.CategoryName = category;
+
                     db.Products.InsertOnSubmit(prd);
                     db.SubmitChanges();
 
@@ -351,6 +406,7 @@ namespace test1.Controllers
             string prdname = Request["p-name"];
             string price = Request["p-price"];
             string desc = Request["p-desc"];
+            string category = Request["p-category"];
             int productIntID = int.Parse(id);
 
             if (!string.IsNullOrEmpty(URL) && !string.IsNullOrEmpty(prdname) && !string.IsNullOrEmpty(price) && !string.IsNullOrEmpty(desc))
@@ -366,6 +422,7 @@ namespace test1.Controllers
                         sp.NameProduct = prdname;
                         sp.Price = double.Parse(price);
                         sp.Description = desc;
+                        sp.CategoryName = category;
 
                         db.SubmitChanges();
 
@@ -394,7 +451,7 @@ namespace test1.Controllers
             try
             {
                 //truy vấn db để lấy toàn bộ dữ liệu về ds sản phẩm
-                var qr = db.Products;
+                var qr = db.Products.Where(o=>o.isDelete==true);
                 if (qr.Any())
                 {
                     //có dữ liệu => chính là dssv
