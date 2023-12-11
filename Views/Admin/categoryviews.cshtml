@@ -67,17 +67,15 @@
                                 <button class="button" type="button">
                                     <a class="button__text" href="addcategories">Add Categories
                                     <span class="button__icon"><svg class="svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg></span>
-                                </button>
-                            
-                        </div>
-                        
+                                </button>                            
+                        </div>                        
                     </div>
                 </div>
                         <div class="card-body">
                                 <table class="table table-bordered table-border-grey">
                                     <thead>
                                         <tr class="bg-primary ">
-                                            <th style="width: 10px "> ID</th>
+                                            <th style="width: 10px ">ID</th>
                                             <th style="width: 200px ">Category's name</th>
                                             <th style="width: 50px">Options</th>
                                         </tr>
@@ -227,49 +225,49 @@
             }
         );
 
-        $("#btn_search_action").click(function () {
-            //alert($("#txt_search_val").val());
-            var search_type = $("#slc_search_type").val();
-            //if (!search_type) {
-            //    alert("Vui lòng chọn tiêu chí tìm kiếm");
-            //    return false;
-            //}
+        // $("#btn_search_action").click(function () {
+        //     //alert($("#txt_search_val").val());
+        //     var search_type = $("#slc_search_type").val();
+        //     //if (!search_type) {
+        //     //    alert("Vui lòng chọn tiêu chí tìm kiếm");
+        //     //    return false;
+        //     //}
 
-            var formData = new FormData();
-            formData.append("search_val", $("#txt_search_val").val());
-            formData.append("search_type", search_type);
+        //     var formData = new FormData();
+        //     formData.append("search_val", $("#txt_search_val").val());
+        //     formData.append("search_type", search_type);
 
-            $.ajax(
-                {
-                    type: "POST",
-                    data: formData,
-                    contentType: "application/json; charset=utf-8",
-                    url: window.location.origin + '/QLSV/Search_SV',
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    success: function (response) {
-                        var rs = JSON.parse(response);
+        //     $.ajax(
+        //         {
+        //             type: "POST",
+        //             data: formData,
+        //             contentType: "application/json; charset=utf-8",
+        //             url: window.location.origin + '/QLSV/Search_SV',
+        //             processData: false,
+        //             contentType: false,
+        //             cache: false,
+        //             success: function (response) {
+        //                 var rs = JSON.parse(response);
 
-                        if (rs.ErrCode == 1) {
-                            //trường hợp lấy dssv thành công
-                            //console.log(rs.Data);
-                            var str = "";
-                            for (var i = 0; i < rs.Data.length; i++) {
-                                str += "<tr> <td> " + (i + 1) + "</td> <td> " + rs.Data[i].MSSV + " </td><td> " + rs.Data[i].HoTen + "</td> <td><a href='./SuaSV?mssv=" + rs.Data[i].MSSV + "' class=' btn  btn-outline-warning border-0'> <i class='fa fa-pen' > </i> </a> <button type='button' onclick='Delete_obj(" + rs.Data[i].MSSV + ")' class='btn btn-outline-danger border-0'> <i class='fa fa-trash' > </i> </button> </td> </tr>";
-                            }
-                            $("#tbl_data").html(str);
-                        }
-                        else {
-                            alert(rs.ErrDesc);
-                        }
-                    },
-                    error: function (response) {
-                        alert("Xóa sinh viên thất bại");
-                    }
-                }
-            );
-        })
+        //                 if (rs.ErrCode == 1) {
+        //                     //trường hợp lấy dssv thành công
+        //                     //console.log(rs.Data);
+        //                     var str = "";
+        //                     for (var i = 0; i < rs.Data.length; i++) {
+        //                         str += "<tr> <td> " + (i + 1) + "</td> <td> " + rs.Data[i].MSSV + " </td><td> " + rs.Data[i].HoTen + "</td> <td><a href='./SuaSV?mssv=" + rs.Data[i].MSSV + "' class=' btn  btn-outline-warning border-0'> <i class='fa fa-pen' > </i> </a> <button type='button' onclick='Delete_obj(" + rs.Data[i].MSSV + ")' class='btn btn-outline-danger border-0'> <i class='fa fa-trash' > </i> </button> </td> </tr>";
+        //                     }
+        //                     $("#tbl_data").html(str);
+        //                 }
+        //                 else {
+        //                     alert(rs.ErrDesc);
+        //                 }
+        //             },
+        //             error: function (response) {
+        //                 alert("Xóa sinh viên thất bại");
+        //             }
+        //         }
+        //     );
+        // })
     })
 
 </script>
